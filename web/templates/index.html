@@ -1,0 +1,17 @@
+<html>
+
+<head>
+</head>
+
+<body>
+  <h1>Recently Up Hosts</h1>
+  {% for host in hosts %}
+    <h2>{{ host.ip_address }}</h2>
+    <hr />
+    <pre>
+      {{ host.scan_results | pretty_json }}
+    </pre>
+  {% endfor %}
+</body>
+
+</html>
