@@ -1,2 +1,4 @@
 python-nmap
 subconscious
+sanic
+Jinja2
