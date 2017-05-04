@@ -1,0 +1,12 @@
+.spoiler {
+  display: table;
+  position: relative;
+  background-color: #f9fafa;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.tiny {
+  font-size: 30%;
+}

@@ -10,6 +10,7 @@ import db
 from models.host import Host
 
 app = Sanic(__name__)
+app.static('/static', './static')
 
 template_env = Environment(
     loader       = FileSystemLoader("templates/"),

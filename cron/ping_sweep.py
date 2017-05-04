@@ -29,9 +29,9 @@ async def scan_and_report(host, redis_connection):
     print("scanning", host)
     scanner  = nmap.PortScanner()
     # Run in executor doesn't allow for kwargs, so the arguments passed here
-    # are: self, host, ports, arguments.
+    # are: self, host, ports, arguments, sudo.
     result = await loop.run_in_executor(executor, nmap.PortScanner.scan,
-            scanner, host, None, "-sn")
+            scanner, host, None, "-sn", True)
     entry = Host(
         ip_address   = host,
         scanned_at   = result["nmap"]["scanstats"]["timestr"],
