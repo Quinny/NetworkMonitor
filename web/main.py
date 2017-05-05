@@ -2,27 +2,25 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sanic import Sanic, response
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from concurrent.futures import ThreadPoolExecutor
+from jinja2             import Environment, FileSystemLoader, select_autoescape
+from sanic              import Sanic, response
 import json
 
 import db
+import filters
 from models.host import Host
 
 app = Sanic(__name__)
 app.static('/static', './static')
+background_task_executor = ThreadPoolExecutor()
 
 template_env = Environment(
     loader       = FileSystemLoader("templates/"),
     autoescape   = select_autoescape(['html', 'xml']),
     enable_async = True
 )
-
-def pretty_json(json_str):
-    return json.dumps(json.loads(json_str), sort_keys = True,
-                      indent = 4, separators=(',', ': '))
-
-template_env.filters["pretty_json"] = pretty_json
+filters.register(template_env)
 
 def use_template(template):
     def dec(f):

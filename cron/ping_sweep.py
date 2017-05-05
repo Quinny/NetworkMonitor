@@ -7,15 +7,15 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import asyncio
-import nmap
-import ipaddress
-import json
 from concurrent.futures import ThreadPoolExecutor
+import asyncio
+import json
+import ipaddress
+import nmap
 
-import settings
 from models.host import Host
 import db
+import settings
 
 executor = ThreadPoolExecutor()
 loop     = asyncio.get_event_loop()
