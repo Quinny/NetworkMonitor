@@ -31,6 +31,9 @@
             <span class="lead">
               {{ host.scanned_at }}
             </span>
+            <button class="btn btn-small" onclick="scheduleScan(this, '{{host.ip_address}}')">
+              Schedule Full Scan
+            </button>
             <span class="lead pull-right text-muted">
               Click for scan results
             </span>

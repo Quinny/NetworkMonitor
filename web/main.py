@@ -5,7 +5,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from concurrent.futures import ThreadPoolExecutor
 from jinja2             import Environment, FileSystemLoader, select_autoescape
 from sanic              import Sanic, response
+import asyncio
 import json
+import nmap
 
 import db
 import filters
@@ -13,7 +15,7 @@ from models.host import Host
 
 app = Sanic(__name__)
 app.static('/static', './static')
-background_task_executor = ThreadPoolExecutor()
+background_scan_executor = ThreadPoolExecutor()
 
 template_env = Environment(
     loader       = FileSystemLoader("templates/"),
@@ -32,6 +34,19 @@ def use_template(template):
         return wrap
     return dec
 
+async def poll_scan_queue():
+    while app.is_running:
+        maybe_host = await app.redis_connection.lpop("scan_queue")
+        if maybe_host is not None:
+            scanner = nmap.PortScanner()
+            print("performing full scan on", maybe_host)
+            result = await app.loop.run_in_executor(background_scan_executor, nmap.PortScanner.scan,
+                    scanner, maybe_host, None, "-A", False)
+            entry = Host.from_nmap_scan_result(maybe_host, result)
+            await entry.save(app.redis_connection)
+            print(maybe_host, "scan complete")
+        await asyncio.sleep(5)
+
 @app.listener('before_server_start')
 async def before_server_start(app, loop):
     app.redis_connection = await db.connect(loop)
@@ -48,5 +63,11 @@ async def index(request):
             db = request.app.redis_connection, up = 1)]
     return {"hosts" : recently_up}
 
+@app.route("/scan/<host>")
+async def scan(request, host):
+    await app.redis_connection.lpush("scan_queue", host)
+    return response.json({"status": "ok"})
+
 if __name__ == '__main__':
+    app.add_task(poll_scan_queue())
     app.run(host="0.0.0.0", port=8000)

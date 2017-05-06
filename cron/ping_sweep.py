@@ -31,14 +31,8 @@ async def scan_and_report(host, redis_connection):
     # Run in executor doesn't allow for kwargs, so the arguments passed here
     # are: self, host, ports, arguments, sudo.
     result = await loop.run_in_executor(executor, nmap.PortScanner.scan,
-            scanner, host, None, "-sn", True)
-    entry = Host(
-        ip_address   = host,
-        scanned_at   = result["nmap"]["scanstats"]["timestr"],
-        scan_results = json.dumps(result),
-        up           = int(is_up(result))
-
-    )
+            scanner, host, None, "-sn", False)
+    entry = Host.from_nmap_scan_result(host, result)
     await entry.save(redis_connection)
 
 # Generate the IP addresses of all hosts within the provided network mask.
