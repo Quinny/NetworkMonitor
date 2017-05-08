@@ -1,1 +1,1 @@
-*/10 * * * * python3 ~/Documents/NetworkMonitor/ping_sweep.py
+*/10 * * * * python3 ~/Documents/NetworkMonitor/cron/ping_sweep.py
