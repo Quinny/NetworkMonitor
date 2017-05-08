@@ -1,9 +1,12 @@
+<!DOCTYPE html>
+
 <html>
 
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Monitor</title>
 
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
@@ -23,26 +26,32 @@
 <body>
   <div class="container-fluid">
     <h1 class="text-center">Recently Up Hosts</h1>
+    <hr />
     {% for host in hosts %}
+    <div class="spoiler-container">
       <div class="row">
-        <div class="col-md-8 col-md-offset-2 spoiler">
+        <div class="col-md-8 col-md-offset-2 col-sm-12 spoiler">
           <h2 class="spoiler-btn">
-            {{ host | primary_id }} 
+            {{ host | primary_id }}
+
             <span class="lead">
               {{ host | secondary_id }}
             </span>
-            <small class="lead pull-right text-muted">
-              Click for scan results
-            </small>
-            <button class="btn btn-small pull-right" onclick="scheduleScan(this, '{{host.ip_address}}')">
+
+            <button class="btn btn-small pull-right" onclick="scheduleScan(event, this, '{{host.ip_address}}')">
               Schedule Full Scan
             </button>
           </h2>
-          <pre class="spoiler-body collapse">
-{{ host.scan_results | pretty_json }}
+        </div> <! -- info col -->
+      </div> <! -- info row -->
+      <div class="row spoiler-body collapse">
+        <div class="col-md-8 col-md-offset-2 col-sm-12">
+          <pre>
+  {{ host.scan_results | pretty_json }}
           </pre>
-        </div>
-    </div>
+        </div> <! -- scan result col -->
+      </div> <! -- scan result row -->
+    </div> <! -- spoiler -->
     {% endfor %}
   </div>
 </body>

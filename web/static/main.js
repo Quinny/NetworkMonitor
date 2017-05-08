@@ -1,12 +1,13 @@
 $.fn.ready(function() {
-    // Spoiler
     $(document).on('click', '.spoiler-btn', function (e) {
-        e.preventDefault()
-        $(this).parent().children('.spoiler-body').collapse('toggle')
+        e.preventDefault();
+        $(this).parents(".spoiler-container")
+               .find('.spoiler-body')
+               .collapse('toggle');
     });
 });
 
-function scheduleScan(source, host) {
+function scheduleScan(e, source, host) {
   $.get("scan/" + host, () => {
     var successBox = $("<div class='alert alert-success fade in'>\
         Scan successfully scheduled\
