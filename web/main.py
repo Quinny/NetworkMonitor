@@ -9,9 +9,10 @@ import asyncio
 import json
 import nmap
 
+from models.host import Host
 import db
 import filters
-from models.host import Host
+import settings
 
 app = Sanic(__name__)
 app.static('/static', './static')
@@ -41,7 +42,7 @@ async def poll_scan_queue():
             scanner = nmap.PortScanner()
             print("performing full scan on", maybe_host)
             result = await app.loop.run_in_executor(background_scan_executor, nmap.PortScanner.scan,
-                    scanner, maybe_host, None, "-A", False)
+                    scanner, maybe_host, None, "-A --dns-servers " + settings.LOCAL_DNS_ADDR, False)
             entry = Host.from_nmap_scan_result(maybe_host, result)
             await entry.save(app.redis_connection)
             print(maybe_host, "scan complete")
@@ -70,4 +71,4 @@ async def scan(request, host):
 
 if __name__ == '__main__':
     app.add_task(poll_scan_queue())
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=settings.WEB_UI_PORT)

@@ -14,4 +14,5 @@ function scheduleScan(source, host) {
     $(source).parent().prepend(successBox);
     setTimeout(() => successBox.fadeOut(), 1000);
   });
+  e.stopPropagation();
 }

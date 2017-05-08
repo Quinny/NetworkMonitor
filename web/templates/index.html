@@ -27,16 +27,16 @@
       <div class="row">
         <div class="col-md-8 col-md-offset-2 spoiler">
           <h2 class="spoiler-btn">
-            {{ host.ip_address }}
+            {{ host | primary_id }} 
             <span class="lead">
-              {{ host.scanned_at }}
+              {{ host | secondary_id }}
             </span>
-            <button class="btn btn-small" onclick="scheduleScan(this, '{{host.ip_address}}')">
+            <small class="lead pull-right text-muted">
+              Click for scan results
+            </small>
+            <button class="btn btn-small pull-right" onclick="scheduleScan(this, '{{host.ip_address}}')">
               Schedule Full Scan
             </button>
-            <span class="lead pull-right text-muted">
-              Click for scan results
-            </span>
           </h2>
           <pre class="spoiler-body collapse">
 {{ host.scan_results | pretty_json }}
