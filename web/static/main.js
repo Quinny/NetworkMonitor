@@ -8,10 +8,10 @@ $.fn.ready(function() {
 
 function scheduleScan(source, host) {
   $.get("scan/" + host, () => {
-    $(source).prepend(
-        "<div class='alert alert-success fade in alert-dismissable'>\
-          Scan successfully scheduled\
-        </div>"
-    );
+    var successBox = $("<div class='alert alert-success fade in'>\
+        Scan successfully scheduled\
+      </div>");
+    $(source).parent().prepend(successBox);
+    setTimeout(() => successBox.fadeOut(), 1000);
   });
 }
