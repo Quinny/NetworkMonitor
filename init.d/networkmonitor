@@ -11,9 +11,10 @@
 
 # Template from: https://github.com/fhd/init-script-template
 
-dir="~/Documents/NetworkMonitor/web"
+dir="/path/to/NetworkMonitor/web"
 cmd="python3 main.py"
-user="pi"
+# Empty implies run as sudo
+user=""
 
 name=`basename $0`
 pid_file="/var/run/$name.pid"
