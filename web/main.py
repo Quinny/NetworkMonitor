@@ -25,6 +25,8 @@ template_env = Environment(
 )
 filters.register(template_env)
 
+# A decorator which renders the provided template file with the context returned
+# from the route handler.
 def use_template(template):
     def dec(f):
         async def wrap(*args, **kwargs):
@@ -35,6 +37,11 @@ def use_template(template):
         return wrap
     return dec
 
+# Poll the scan queue every 5 seconds and perform a full port scan on any queued
+# hosts in a background thread.
+#
+# TODO: Consider making this consume the entire queue and scan all scheduled
+# hosts instead of one at a time.
 async def poll_scan_queue():
     while app.is_running:
         maybe_host = await app.redis_connection.lpop("scan_queue")
@@ -48,15 +55,18 @@ async def poll_scan_queue():
             print(maybe_host, "scan complete")
         await asyncio.sleep(5)
 
+# Connect to the redis backend.
 @app.listener('before_server_start')
 async def before_server_start(app, loop):
     app.redis_connection = await db.connect(loop)
 
+# Clean up redis connection.
 @app.listener('after_server_stop')
 async def after_server_stop(app, loop):
     app.redis_connection.close()
     await app.redis_connection.wait_closed()
 
+# Display all hosts which were reported to be online after the last scan.
 @app.route("/")
 @use_template("index.html")
 async def index(request):
@@ -64,6 +74,7 @@ async def index(request):
             db = request.app.redis_connection, up = 1)]
     return {"hosts" : recently_up}
 
+# Schedule a host to be fully scanned.
 @app.route("/scan/<host>")
 async def scan(request, host):
     await app.redis_connection.lpush("scan_queue", host)
